@@ -15,6 +15,10 @@ namespace StoryList.API.Controllers
             _shoppingListService = shoppingListService;
         }
 
+        /// <summary>
+        /// Gets all shopping lists.
+        /// </summary>
+        /// <returns>A list of shopping lists</returns>
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
@@ -22,6 +26,11 @@ namespace StoryList.API.Controllers
             return Ok(shoppingLists);
         }
 
+        /// <summary>
+        /// Gets a shopping list by ID.
+        /// </summary>
+        /// <param name="id">The ID of the shopping list.</param>
+        /// <returns>The shopping list with the specified ID.</returns>
         [HttpGet("{id:guid}")]
         public async Task<IActionResult> GetById(Guid id)
         {
@@ -33,6 +42,11 @@ namespace StoryList.API.Controllers
             return Ok(shoppingList);
         }
 
+        /// <summary>
+        /// Creates a new shopping list.
+        /// </summary>
+        /// <param name="shoppingListDto">The shopping list data transfer object.</param>
+        /// <returns>The created shopping list.</returns>
         [HttpPost]
         public async Task<IActionResult> Create(ShoppingListDto shoppingListDto)
         {
@@ -45,6 +59,12 @@ namespace StoryList.API.Controllers
             return CreatedAtAction(nameof(GetById), new { id = shoppingListDto.Id }, shoppingListDto);
         }
 
+        /// <summary>
+        /// Update an existing shopping list.
+        /// </summary>
+        /// <param name="id">The ID of the shopping list to update.</param>
+        /// <param name="shoppingListDto">The updated shopping list data transfer object.</param>
+        /// <returns>No content.</returns>
         [HttpPut("{id:guid}")]
         public async Task<IActionResult> Update(Guid id, [FromBody] ShoppingListDto shoppingListDto)
         {
@@ -63,6 +83,11 @@ namespace StoryList.API.Controllers
             return NoContent();
         }
 
+        /// <summary>
+        /// Deletes a shopping list by ID.
+        /// </summary>
+        /// <param name="id">The ID of the shopping list to delete.</param>
+        /// <returns>No content.</returns>
         [HttpDelete("{id:guid}")]
         public async Task<IActionResult> Delete(Guid id)
         {
