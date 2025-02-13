@@ -17,7 +17,7 @@ Web API application built using ASP.NET Core and Entity Framework Core. It provi
 1. Clone the repository:
 ```
 git clone "the repository"
-cd StoreList
+cd store-list
 ```
 
 2. Set up the database connection string in appsettings.json:
