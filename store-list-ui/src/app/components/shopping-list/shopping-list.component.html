@@ -1,0 +1,44 @@
+<div class="container py-5">
+    <div class="row mb-4 align-items-center">
+        <div class="col">
+            <h2 class="display-6 mb-0">My Shopping Lists</h2>
+        </div>
+        <div class="col-auto">
+            <button [routerLink]="['/new']" class="btn btn-primary d-flex align-items-center gap-2">
+                <i class="bi bi-plus-circle"></i>
+                Create New List
+            </button>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-md-6 col-lg-4" *ngFor="let list of shoppingLists">
+            <div class="card shadow-sm h-100">
+                <div class="card-body d-flex flex-column">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="card-title mb-0">
+                            <a [routerLink]="['/lists', list.id]" class="text-decoration-none text-dark stretched-link">
+                                {{ list.name }}
+                            </a>
+                        </h5>
+                        <span class="badge bg-info text-white position-relative">{{ list.items?.length || 0 }} items</span>
+                    </div>
+                    <div class="mt-3 position-relative">
+                        <button 
+                            [routerLink]="['/edit', list.id]" 
+                            class="btn btn-outline-primary d-flex align-items-center gap-2 position-relative z-1">
+                            <i class="bi bi-pencil"></i>
+                            Edit List
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Message si aucune liste -->
+    <div *ngIf="shoppingLists.length === 0" class="text-center py-5">
+        <i class="bi bi-cart3 display-1 text-muted"></i>
+        <p class="lead mt-3">No shopping lists yet. Create your first list!</p>
+    </div>
+</div>

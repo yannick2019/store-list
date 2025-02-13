@@ -1,0 +1,17 @@
+.card {
+    transition: transform 0.2s ease-in-out;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+
+.btn {
+    border-radius: 25px;
+    padding: 8px 20px;
+}
+
+.badge {
+    border-radius: 20px;
+    padding: 6px 12px;
+}
