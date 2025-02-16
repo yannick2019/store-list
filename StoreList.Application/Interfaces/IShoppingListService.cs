@@ -9,5 +9,6 @@ namespace StoreList.Application.Interfaces
         Task AddAsync(ShoppingListDto shoppingList);
         Task UpdateAsync(ShoppingListDto shoppingList);
         Task DeleteAsync(Guid id);
+        Task<bool> UpdateItemCheckStateAsync(Guid itemId, bool isChecked);
     }
 }

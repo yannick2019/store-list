@@ -45,11 +45,34 @@ namespace StoryList.Infrastructure.Repositories
             // Update the main shopping list properties
             existingList.Name = shoppingList.Name;
 
-            // Clear and replace child items
-            _context.Items.RemoveRange(existingList.Items);
-            existingList.Items = shoppingList.Items;
+            // Update existing items and add new ones
+            foreach (var item in shoppingList.Items)
+            {
+                var existingItem = existingList.Items.FirstOrDefault(i => i.Id == item.Id);
+                if (existingItem != null)
+                {
+                    // Update existing item
+                    existingItem.Name = item.Name;
+                    existingItem.Quantity = item.Quantity;
+                    existingItem.IsChecked = item.IsChecked;
+                }
+                else
+                {
+                    // Add new item
+                    existingList.Items.Add(item);
+                }
+            }
 
-            _context.ShoppingLists.Update(existingList);
+            // Remove items that are no longer in the list
+            var itemsToRemove = existingList.Items
+                .Where(existingItem => !shoppingList.Items.Any(newItem => newItem.Id == existingItem.Id))
+                .ToList();
+
+            foreach (var item in itemsToRemove)
+            {
+                existingList.Items.Remove(item);
+            }
+
             await _context.SaveChangesAsync();
         }
 
@@ -64,6 +87,17 @@ namespace StoryList.Infrastructure.Repositories
                 _context.ShoppingLists.Remove(list);
                 await _context.SaveChangesAsync();
             }
+        }
+
+        public async Task<Item?> GetItemByIdAsync(Guid itemId)
+        {
+            return await _context.Items.FindAsync(itemId);
+        }
+
+        public async Task UpdateItemAsync(Item item)
+        {
+            _context.Items.Update(item);
+            await _context.SaveChangesAsync();
         }
     }
 }

@@ -100,5 +100,20 @@ namespace StoreList.API.Controllers
             await _shoppingListService.DeleteAsync(id);
             return NoContent();
         }
+
+        /// <summary>
+        /// Updates the checked state of a shopping list item.
+        /// </summary>
+        [HttpPatch("items/{itemId:guid}/check")]
+        public async Task<IActionResult> UpdateItemCheckState(Guid itemId, [FromBody] bool isChecked)
+        {
+            var result = await _shoppingListService.UpdateItemCheckStateAsync(itemId, isChecked);
+            if (!result)
+            {
+                Console.WriteLine($"Item {itemId} not found");
+                return NotFound($"Item with ID {itemId} not found.");
+            }
+            return NoContent();
+        }
     }
 }
