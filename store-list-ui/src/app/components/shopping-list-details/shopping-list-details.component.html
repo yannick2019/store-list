@@ -48,36 +48,36 @@
                                 <tbody>
                                     <tr *ngFor="let item of shoppingList.items"
                                         class="item-row"
-                                        [class.bg-light]="item.checked"
+                                        [class.bg-light]="item.isChecked"
                                         style="cursor: pointer;"
                                         (click)="toggleItemCheck(item)">
                                         <td class="text-center">
                                             <div class="form-check d-flex justify-content-center">
                                                 <input type="checkbox"
                                                        class="form-check-input"
-                                                       [checked]="item.checked"
+                                                       [checked]="item.isChecked"
                                                        (click)="$event.stopPropagation(); toggleItemCheck(item)">
                                             </div>
                                         </td>
                                         <td>
                                             <div class="d-flex align-items-center gap-2">
                                                 <i class="bi" 
-                                                   [class.bi-cart3]="!item.checked"
-                                                   [class.bi-cart-check-fill]="item.checked"
-                                                   [class.text-primary]="!item.checked"
-                                                   [class.text-success]="item.checked"></i>
-                                                <span [class.text-decoration-line-through]="item.checked"
-                                                      [class.text-muted]="item.checked">
+                                                   [class.bi-cart3]="!item.isChecked"
+                                                   [class.bi-cart-check-fill]="item.isChecked"
+                                                   [class.text-primary]="!item.isChecked"
+                                                   [class.text-success]="item.isChecked"></i>
+                                                <span [class.text-decoration-line-through]="item.isChecked"
+                                                      [class.text-muted]="item.isChecked">
                                                     {{ item.name }}
                                                 </span>
                                             </div>
                                         </td>
                                         <td class="text-end">
                                             <span class="badge" 
-                                                  [class.bg-light]="!item.checked"
-                                                  [class.bg-success]="item.checked"
-                                                  [class.text-dark]="!item.checked"
-                                                  [class.text-white]="item.checked">
+                                                  [class.bg-light]="!item.isChecked"
+                                                  [class.bg-success]="item.isChecked"
+                                                  [class.text-dark]="!item.isChecked"
+                                                  [class.text-white]="item.isChecked">
                                                 × {{ item.quantity }}
                                             </span>
                                         </td>

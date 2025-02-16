@@ -2,14 +2,17 @@ import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 
+interface ShoppingListItem {
+  id: string;
+  name: string;
+  quantity: number;
+  isChecked: boolean;
+}
+
 interface ShoppingList {
-  id: string,
-  name: string,
-  items: {
-    id: string,
-    name: string,
-    quantity: number
-  }[]
+  id: string;
+  name: string;
+  items: ShoppingListItem[];
 }
 
 @Injectable({
@@ -38,5 +41,9 @@ export class ShoppingListService {
 
   deleteList(id: string): Observable<any> {
     return this.http.delete(`${this.apiUrl}/${id}`);
+  }
+
+  updateItemCheckState(itemId: string, isChecked: boolean): Observable<any> {
+    return this.http.patch(`${this.apiUrl}/items/${itemId}/check`, isChecked);
   }
 }

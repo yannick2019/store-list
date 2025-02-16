@@ -7,7 +7,7 @@ interface ShoppingListItem {
   id: string;
   name: string;
   quantity: number;
-  checked?: boolean;
+  isChecked?: boolean;
 }
 
 interface ShoppingList {
@@ -54,17 +54,24 @@ export class ShoppingListDetailsComponent implements OnInit {
   }
 
   toggleItemCheck(item: ShoppingListItem): void {
-    item.checked = !item.checked;
+    const newCheckedState = !item.isChecked;
+    //console.log('Toggling item:', item.id, 'to state:', newCheckedState);
     
-    // Sauvegarder dans localStorage
-    if (this.shoppingList) {
-      const checkedStates = JSON.parse(localStorage.getItem(`checkedItems_${this.shoppingList.id}`) || '{}');
-      checkedStates[item.id] = item.checked;
-      localStorage.setItem(`checkedItems_${this.shoppingList.id}`, JSON.stringify(checkedStates));
-    }
+    item.isChecked = newCheckedState;
+    
+    this.shoppingListService.updateItemCheckState(item.id, newCheckedState)
+      .subscribe({
+        next: (response) => {
+          //console.log('Successfully updated item state:', response);
+        },
+        error: (error) => {
+          item.isChecked = !newCheckedState;
+          console.error('Failed to update item state:', error);
+        }
+      });
   }
 
   getCheckedItemsCount(): number {
-    return this.shoppingList?.items.filter(item => item.checked).length || 0;
+    return this.shoppingList?.items.filter(item => item.isChecked).length || 0;
   }
 }
