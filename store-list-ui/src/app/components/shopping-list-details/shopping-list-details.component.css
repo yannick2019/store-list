@@ -1,0 +1,36 @@
+.shopping-list-details {
+    animation: fadeIn 0.3s ease-in;
+}
+
+.item-row {
+    transition: background-color 0.2s ease;
+}
+
+.item-row:hover {
+    background-color: #f8f9fa;
+}
+
+.badge {
+    font-size: 0.9rem;
+    padding: 0.5em 1em;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.table th {
+    font-weight: 600;
+    color: #6c757d;
+}
+
+.card {
+    border: none;
+    border-radius: 1rem;
+}
+
+.btn {
+    padding: 0.5rem 1.5rem;
+    border-radius: 0.5rem;
+}
