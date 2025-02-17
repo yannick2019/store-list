@@ -9,5 +9,7 @@ namespace StoreList.Domain.Interfaces
         Task AddAsync(ShoppingList shoppingList);
         Task UpdateAsync(ShoppingList shoppingList);
         Task DeleteAsync(Guid id);
+        Task<Item?> GetItemByIdAsync(Guid itemId);
+        Task UpdateItemAsync(Item item);
     }
 }

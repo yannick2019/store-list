@@ -24,7 +24,8 @@ namespace StoryList.Application.Services
                 {
                     Id = Guid.NewGuid(),
                     Name = i.Name,
-                    Quantity = i.Quantity
+                    Quantity = i.Quantity,
+                    IsChecked = i.IsChecked
                 }).ToList()
             };
 
@@ -42,7 +43,8 @@ namespace StoryList.Application.Services
                 {
                     Id = item.Id,
                     Name = item.Name,
-                    Quantity = item.Quantity
+                    Quantity = item.Quantity,
+                    IsChecked = item.IsChecked
                 }).ToList()
             });
         }
@@ -60,7 +62,8 @@ namespace StoryList.Application.Services
                 {
                     Id = item.Id,
                     Name = item.Name,
-                    Quantity = item.Quantity
+                    Quantity = item.Quantity,
+                    IsChecked = item.IsChecked
                 }).ToList()
             };
         }
@@ -75,7 +78,8 @@ namespace StoryList.Application.Services
                 {
                     Id = i.Id,
                     Name = i.Name,
-                    Quantity = i.Quantity
+                    Quantity = i.Quantity,
+                    IsChecked = i.IsChecked
                 }).ToList()
             };
 
@@ -85,6 +89,19 @@ namespace StoryList.Application.Services
         public async Task DeleteAsync(Guid id)
         {
             await _repository.DeleteAsync(id);
+        }
+
+        public async Task<bool> UpdateItemCheckStateAsync(Guid itemId, bool isChecked)
+        {
+            var item = await _repository.GetItemByIdAsync(itemId);
+            if (item == null)
+            {
+                return false;
+            }
+
+            item.IsChecked = isChecked;
+            await _repository.UpdateItemAsync(item);
+            return true;
         }
     }
 }
