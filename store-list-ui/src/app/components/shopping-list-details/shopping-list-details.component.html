@@ -95,10 +95,10 @@
     <div *ngIf="!isLoading && (!shoppingList || shoppingList.items.length === 0)" 
          class="text-center py-5">
         <i class="bi bi-cart3 display-1 text-muted"></i>
-        <p class="lead mt-3">Cette liste est vide !</p>
+        <p class="lead mt-3">This list is empty !</p>
         <button [routerLink]="['/edit', shoppingList?.id]" 
                 class="btn btn-primary mt-3">
-            Ajouter des articles
+            Add new items
         </button>
     </div>
 </div>
