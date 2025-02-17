@@ -1,7 +1,7 @@
 # StoryList API
 
 ## Overview
-Web API application built using ASP.NET Core and Entity Framework Core. It provides a RESTful API for managing shopping lists.
+Web API application built using ASP.NET Core and Entity Framework Core with Domain-Driven Design. It provides a RESTful API for managing shopping lists.
 
 ## Feature
 -	Create, read, update, and delete shopping lists.
