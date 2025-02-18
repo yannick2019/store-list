@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using StoreList.Application.DTOs;
 using StoreList.Application.Interfaces;
 
@@ -6,6 +7,7 @@ namespace StoreList.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class ShoppingListController : ControllerBase
     {
         private readonly IShoppingListService _shoppingListService;

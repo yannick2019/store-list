@@ -3,6 +3,7 @@ using Scalar.AspNetCore;
 using StoreList.Infrastructure.Data;
 using StoreList.Application.Ioc;
 using StoreList.Infrastructure.Ioc;
+using StoreList.API.Extensions;
 
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 
@@ -13,7 +14,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 
 builder.Services.AddInfrastructureServices(builder.Configuration);
 builder.Services.AddApplicationServices(builder.Configuration);
-
+builder.Services.AddSwaggerGenService();
 
 builder.Services.AddCors(options => 
 {
@@ -32,17 +33,23 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
+    app.UseSwagger(opt =>
+    {
+        opt.RouteTemplate = "openapi/{documentName}.json";
+    });
     app.MapScalarApiReference(options => 
     {
         options.WithTitle("StoreList API")
             .WithTheme(ScalarTheme.Mars)
-            .WithDefaultHttpClient(ScalarTarget.CSharp, ScalarClient.HttpClient);
+            .WithDefaultHttpClient(ScalarTarget.JavaScript, ScalarClient.HttpClient);
     });
 }
 
 app.UseHttpsRedirection();
 
 app.UseCors(MyAllowSpecificOrigins);
+
+app.UseAuthentication();
 
 app.UseAuthorization();
 
