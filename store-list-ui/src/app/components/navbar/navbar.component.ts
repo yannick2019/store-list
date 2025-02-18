@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject, Input } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
+import { AuthService } from '../../services/auth.service';
 
 interface User {
   name: string;
@@ -16,20 +17,17 @@ interface User {
 export class NavbarComponent {
   @Input() user: User | null = null;
   private router = inject(Router);
+  private authService = inject(AuthService);
   isDropdownOpen = false;
 
   toggleDropdown() {
     this.isDropdownOpen = !this.isDropdownOpen;
   }
 
-  login(): void {
-    // ToDo
-  }
-
   logout(): void {
-    // ToDo
-    // Implement logic
+    this.authService.logout();
     this.isDropdownOpen = false;
+    this.router.navigate(['/login']);
   }
 
   goToProfile(): void {

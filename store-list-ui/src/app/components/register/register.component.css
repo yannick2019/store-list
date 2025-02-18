@@ -1,0 +1,29 @@
+.bg-light-green {
+  background-color: #F1F7F2;
+}
+
+.text-green {
+  color: #4B7B5C;
+}
+
+.form-control:focus {
+  border-color: #4B7B5C;
+  box-shadow: none;
+}
+
+.form-control.is-invalid {
+  border-color: #dc3545;
+  background-image: none;
+}
+
+.btn-outline-light {
+  background-color: #ffffff;
+  color: #000000;
+  border-color: #E2E8F0;
+}
+
+.btn-outline-light:hover {
+  background-color: #f8f9fa;
+  color: #000000;
+  border-color: #E2E8F0;
+}
