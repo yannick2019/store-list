@@ -1,0 +1,18 @@
+.navbar {
+    padding-top: 0.75rem;
+    padding-bottom: 0.75rem;
+  }
+  .dropdown-menu {
+    margin-top: 0.5rem;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+  }
+  .dropdown-item {
+    padding: 0.5rem 1rem;
+  }
+  .nav-link {
+    padding: 0.5rem 1rem;
+    font-weight: 500;
+  }
+  .nav-link.active {
+    color: var(--bs-primary);
+  }

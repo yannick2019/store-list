@@ -1,0 +1,16 @@
+.cursor-pointer {
+    cursor: pointer;
+}
+
+.modal {
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+:host {
+    display: block;
+}
+
+/* Quand le modal est ouvert, empêcher le scroll du body */
+:host-context(body.modal-open) {
+    overflow: hidden;
+}
