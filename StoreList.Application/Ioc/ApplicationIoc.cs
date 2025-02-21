@@ -2,7 +2,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using StoreList.Application.Interfaces;
 using StoreList.Application.Services;
-using StoryList.Application.Services;
 
 namespace StoreList.Application.Ioc
 {
@@ -12,7 +11,8 @@ namespace StoreList.Application.Ioc
         {
             services.AddScoped<IShoppingListService, ShoppingListService>();
             services.AddScoped<IAuthService, AuthService>();
-
+            services.AddScoped<IUserContextService, UserContextService>();
+            services.AddHttpContextAccessor();
         }
     }
 }

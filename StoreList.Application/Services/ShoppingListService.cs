@@ -3,7 +3,7 @@ using StoreList.Application.Interfaces;
 using StoreList.Domain.Entities;
 using StoreList.Domain.Interfaces;
 
-namespace StoryList.Application.Services
+namespace StoreList.Application.Services
 {
     internal class ShoppingListService : IShoppingListService
     {
@@ -14,13 +14,14 @@ namespace StoryList.Application.Services
             _repository = shoppingListRepository;
         }
 
-        public async Task AddAsync(ShoppingListDto shoppingListDto)
+        public async Task AddAsync(ShoppingListDto shoppingListDto, string userId)
         {
             var shoppingList = new ShoppingList
             {
                 Id = Guid.NewGuid(),
                 Name = shoppingListDto.Name,
-                Items = shoppingListDto.Items.Select(i => new Item 
+                UserId = userId,  
+                Items = shoppingListDto.Items.Select(i => new Item
                 {
                     Id = Guid.NewGuid(),
                     Name = i.Name,
@@ -28,17 +29,17 @@ namespace StoryList.Application.Services
                     IsChecked = i.IsChecked
                 }).ToList()
             };
-
             await _repository.AddAsync(shoppingList);
         }
 
-        public async Task<IEnumerable<ShoppingListDto>> GetAllAsync()
+        public async Task<IEnumerable<ShoppingListDto>> GetAllAsync(string userId)
         {
-            var shoppingLists = await _repository.GetAllAsync();
+            var shoppingLists = await _repository.GetAllAsync(userId);
             return shoppingLists.Select(list => new ShoppingListDto
             {
                 Id = list.Id,
                 Name = list.Name,
+                UserId = list.UserId,  
                 Items = list.Items.Select(item => new ItemDto
                 {
                     Id = item.Id,
@@ -49,16 +50,17 @@ namespace StoryList.Application.Services
             });
         }
 
-        public async Task<ShoppingListDto> GetByIdAsync(Guid id)
+        public async Task<ShoppingListDto?> GetByIdAsync(Guid id, string userId)
         {
-            var list = await _repository.GetByIdAsync(id);
-            if (list == null) return null!;
+            var list = await _repository.GetByIdAsync(id, userId);
+            if (list == null) return null;
 
             return new ShoppingListDto
             {
                 Id = list.Id,
                 Name = list.Name,
-                Items = list.Items.Select(item => new ItemDto 
+                UserId = list.UserId,  
+                Items = list.Items.Select(item => new ItemDto
                 {
                     Id = item.Id,
                     Name = item.Name,
@@ -68,13 +70,14 @@ namespace StoryList.Application.Services
             };
         }
 
-        public async Task UpdateAsync(ShoppingListDto shoppingListDto)
+        public async Task UpdateAsync(ShoppingListDto shoppingListDto, string userId)
         {
             var shoppingList = new ShoppingList
             {
                 Id = shoppingListDto.Id,
                 Name = shoppingListDto.Name,
-                Items = shoppingListDto.Items.Select(i => new Item 
+                UserId = userId,  
+                Items = shoppingListDto.Items.Select(i => new Item
                 {
                     Id = i.Id,
                     Name = i.Name,
@@ -82,25 +85,24 @@ namespace StoryList.Application.Services
                     IsChecked = i.IsChecked
                 }).ToList()
             };
-
-            await _repository.UpdateAsync(shoppingList);
+            await _repository.UpdateAsync(shoppingList, userId);
         }
 
-        public async Task DeleteAsync(Guid id)
+        public async Task DeleteAsync(Guid id, string userId)
         {
-            await _repository.DeleteAsync(id);
+            await _repository.DeleteAsync(id, userId);
         }
 
-        public async Task<bool> UpdateItemCheckStateAsync(Guid itemId, bool isChecked)
+        public async Task<bool> UpdateItemCheckStateAsync(Guid itemId, bool isChecked, string userId)
         {
-            var item = await _repository.GetItemByIdAsync(itemId);
+            var item = await _repository.GetItemByIdAsync(itemId, userId);
             if (item == null)
             {
                 return false;
             }
 
             item.IsChecked = isChecked;
-            await _repository.UpdateItemAsync(item);
+            await _repository.UpdateItemAsync(item, userId);
             return true;
         }
     }

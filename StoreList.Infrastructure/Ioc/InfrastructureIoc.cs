@@ -4,10 +4,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using StoreList.Domain.Interfaces;
-using StoryList.Infrastructure.Repositories;
+using StoreList.Infrastructure.Repositories;
 using StoreList.Infrastructure.Data;
-using StoreList.Infrastructure.Identity;
 using Microsoft.AspNetCore.Identity;
+using StoreList.Domain.Entities;
 
 namespace StoreList.Infrastructure.Ioc
 {
@@ -20,6 +20,7 @@ namespace StoreList.Infrastructure.Ioc
 
             services.AddIdentityCore<AppUser>()
                 .AddEntityFrameworkStores<ApplicationDbContext>()
+                .AddSignInManager<SignInManager<AppUser>>()
                 .AddDefaultTokenProviders();
 
             services.AddAuthentication(options =>

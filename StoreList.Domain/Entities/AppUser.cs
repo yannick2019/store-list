@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 
-namespace StoreList.Infrastructure.Identity
+namespace StoreList.Domain.Entities
 {
     public class AppUser : IdentityUser
     {
