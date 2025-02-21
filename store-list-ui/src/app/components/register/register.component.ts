@@ -17,7 +17,6 @@ export class RegisterComponent implements OnInit{
 
   registerForm!: FormGroup;
   submitted = false;
-  successMessage: string | null = null; 
   errorMessage: string | null = null; 
 
   ngOnInit(): void {
@@ -35,15 +34,11 @@ export class RegisterComponent implements OnInit{
 
   onSubmit(): void {
     this.submitted = true;
-    this.successMessage = null;
     this.errorMessage = null;
     
     if (this.registerForm.valid) {
       this.authService.register(this.registerForm.value).subscribe({
-        next: () => {
-          this.successMessage = 'Registration successful! Redirecting...';
-          setTimeout(() => this.router.navigate(['/lists']), 2000);
-        },
+        next: () => this.router.navigate(['/lists']),
         error: () => this.errorMessage = 'Registration failed'
       })
     }

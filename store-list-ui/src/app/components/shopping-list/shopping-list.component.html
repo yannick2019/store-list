@@ -4,7 +4,7 @@
             <h2 class="display-6 mb-0">My Shopping Lists</h2>
         </div>
         <div class="col-auto">
-            <button [routerLink]="['/new']" class="btn btn-primary d-flex align-items-center gap-2">
+            <button [routerLink]="['/new']" class="btn btn-dark d-flex align-items-center gap-2">
                 <i class="bi bi-plus-circle"></i>
                 New List
             </button>
@@ -21,12 +21,12 @@
                                 {{ list.name }}
                             </a>
                         </h5>
-                        <span class="badge bg-primary text-white position-relative">{{ list.items?.length || 0 }} items</span>
+                        <span class="badge text-white position-relative" style="background-color: #94daae;">{{ list.items?.length || 0 }} items</span>
                     </div>
                     <div class="mt-3 position-relative">
                         <button 
                             [routerLink]="['/edit', list.id]" 
-                            class="btn btn-outline-primary d-flex align-items-center gap-2 position-relative z-1">
+                            class="btn btn-outline-dark d-flex align-items-center gap-2 position-relative z-1">
                             <i class="bi bi-pencil"></i>
                             Edit List
                         </button>
