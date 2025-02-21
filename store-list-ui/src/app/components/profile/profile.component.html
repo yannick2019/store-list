@@ -1,0 +1,11 @@
+<div class="container py-5">
+    <div class="row mb-4 align-items-center">
+        <div class="col">
+            <h1 class="display-6 mb-4">User profile</h1>
+            <div class="row profile" *ngIf="user$ | async as user">
+                <p><strong>Nom d'utilisateur:</strong> {{ user.userName }}</p>
+                <p><strong>Email:</strong> {{ user.email }}</p>
+            </div>
+        </div>
+    </div>
+</div>

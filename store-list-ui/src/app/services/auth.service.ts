@@ -1,7 +1,9 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, tap } from 'rxjs';
-import { Authresponse, LoginRequest, RegisterRequest } from '../models/models';
+import { Authresponse, LoginRequest, RegisterRequest, User } from '../models/models';
+import { UserStateService } from './user-state.service';
+import { jwtDecode } from 'jwt-decode';
 
 @Injectable({
   providedIn: 'root'
@@ -9,7 +11,8 @@ import { Authresponse, LoginRequest, RegisterRequest } from '../models/models';
 export class AuthService {
   private apiUrl = 'https://localhost:7019/api/account';
   private http = inject(HttpClient);
-  private tokenSubjet = new BehaviorSubject<string | null>(localStorage.getItem('token'));
+  private tokenSubject = new BehaviorSubject<string | null>(localStorage.getItem('token'));
+  private userState = inject(UserStateService);
 
   login(request: LoginRequest): Observable<Authresponse> {
     return this.http.post<Authresponse>(`${this.apiUrl}/login`, request)
@@ -28,17 +31,26 @@ export class AuthService {
 
   private handleAuthentication(response: Authresponse) {
     localStorage.setItem('token', response.token);
-    this.tokenSubjet.next(response.token);
+    this.tokenSubject.next(response.token);
+
+    const decodedToken = jwtDecode<any>(response.token);
+    const user: User = {
+      userName: decodedToken.unique_name,
+      email: decodedToken.email,
+      firstName: decodedToken.firstName,
+      lastName: decodedToken.lastName,
+    };
+    this.userState.setUser(user);
   }
 
   logout(): void {
     localStorage.removeItem('token');
-    this.tokenSubjet.next(null);
-    localStorage.removeItem('user');
+    this.tokenSubject.next(null);
+    this.userState.setUser(null);
   }
 
   getToken(): string | null {
-    return this.tokenSubjet.value;
+    return this.tokenSubject.value;
   }
 
   isAuthenticated(): boolean {

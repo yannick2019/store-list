@@ -11,6 +11,18 @@
         </div>
     </div>
 
+    <!-- Loading state -->
+    <div *ngIf="isLoading" class="text-center py-5">
+        <div class="spinner-border text-success" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
+
+    <!-- Error state -->
+    <div *ngIf="error" class="alert alert-danger" role="alert">
+        {{ error }}
+    </div>
+
     <div class="row g-4">
         <div class="col-md-6 col-lg-4" *ngFor="let list of shoppingLists">
             <div class="card shadow-sm h-100">

@@ -1,55 +1,53 @@
 <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm border-bottom">
     <div class="container">
-      <!-- Brand -->
-      <a class="navbar-brand d-flex align-items-center" routerLink="/lists">
-        <img src="shopping-list.png" alt="Logo" class="me-2" height="30">
-        <span class="fw-semibold">StoreList</span>
-      </a>
+        <!-- Brand -->
+        <a class="navbar-brand d-flex align-items-center" routerLink="/lists">
+            <img src="shopping-list.png" alt="Logo" class="me-2" height="30">
+            <span class="fw-semibold">StoreList</span>
+        </a>
 
-      <!-- Toggle button for mobile -->
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-        <span class="navbar-toggler-icon"></span>
-      </button>
+        <!-- Toggle button for mobile -->
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
 
-      <!-- Navbar content -->
-      <div class="collapse navbar-collapse" id="navbarNav">
-        <!-- Nav Links -->
-        <ul class="navbar-nav me-auto">
-          <li class="nav-item">
-            <a class="nav-link" routerLink="/lists">Home</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#">About</a>
-          </li>
-        </ul>
-
-        <!-- User Section -->
-        <div class="d-flex align-items-center">
-          <div class="dropdown">
-            <button 
-              class="btn btn-light d-flex align-items-center gap-2" 
-              type="button"
-              (click)="toggleDropdown()"
-              [class.show]="isDropdownOpen"
-              data-bs-toggle="dropdown">
-              <i class="bi bi-person-circle" style="font-size: 1.5rem;"></i>
-              <span>{{ user?.name || user?.email || 'User' }}</span>
-              <i class="bi bi-chevron-down"></i>
-            </button>
-            
-            <ul class="dropdown-menu dropdown-menu-end" [class.show]="isDropdownOpen">
-                <li>
-                    <button class="dropdown-item" (click)="goToProfile()">
-                    <i class="bi bi-person me-2"></i>Profile
-                    </button>
-              <li>
-                <button class="dropdown-item text-danger" (click)="logout()">
-                  <i class="bi bi-box-arrow-right me-2"></i>Log Out
-                </button>
-              </li>
+        <!-- Navbar content -->
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <!-- Nav Links -->
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item">
+                    <a class="nav-link" routerLink="/lists">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">About</a>
+                </li>
             </ul>
-          </div>
+
+            <!-- User Section -->
+            <div class="d-flex align-items-center">
+                <div class="dropdown">
+                    <button class="btn btn-light d-flex align-items-center gap-2" type="button"
+                        (click)="toggleDropdown()" [class.show]="isDropdownOpen" data-bs-toggle="dropdown">
+                        <i class="bi bi-person-circle" style="font-size: 1.5rem;"></i>
+                        <div *ngIf="user$ | async as user" class="d-none d-md-block">
+                            <span>{{ user.userName || 'User' }}</span>
+                        </div>
+                        <i class="bi bi-chevron-down"></i>
+                    </button>
+
+                    <ul class="dropdown-menu dropdown-menu-end" [class.show]="isDropdownOpen">
+                        <li>
+                            <button class="dropdown-item" (click)="goToProfile()">
+                                <i class="bi bi-person me-2"></i>Profile
+                            </button>
+                        <li>
+                            <button class="dropdown-item text-danger" (click)="logout()">
+                                <i class="bi bi-box-arrow-right me-2"></i>Log Out
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+            </div>
         </div>
-      </div>
     </div>
-  </nav>
+</nav>

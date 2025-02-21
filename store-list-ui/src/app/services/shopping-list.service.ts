@@ -13,6 +13,7 @@ interface ShoppingList {
   id: string;
   name: string;
   items: ShoppingListItem[];
+  userId: string;
 }
 
 @Injectable({
@@ -31,8 +32,8 @@ export class ShoppingListService {
     return this.http.get<ShoppingList>(`${this.apiUrl}/${id}`);
   }
 
-  addList(list: ShoppingList): Observable<any> {
-    return this.http.post(this.apiUrl, list);
+  addList(list: Omit<ShoppingList, 'id' | 'userId'>): Observable<ShoppingList> {
+    return this.http.post<ShoppingList>(this.apiUrl, list);
   }
 
   updateList(id: string, list: ShoppingList): Observable<any> {
