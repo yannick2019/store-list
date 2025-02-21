@@ -6,6 +6,7 @@ using System.Security.Claims;
 using System.Text;
 using StoreList.Application.Interfaces;
 using StoreList.Infrastructure.Identity;
+using StoreList.Domain.Entities;
 
 namespace StoreList.Application.Services
 {
@@ -41,7 +42,7 @@ namespace StoreList.Application.Services
                 return (false, string.Empty, result.Errors.Select(e => e.Description));
             }
 
-            var token = GenerateToken(user.UserName);
+            var token = GenerateToken(user);
             return (true, token, Enumerable.Empty<string>());
         }
 
@@ -53,11 +54,11 @@ namespace StoreList.Application.Services
                 return (false, string.Empty, new List<string> { "Invalid username or password" });
             }
 
-            var token = GenerateToken(model.UserName);
+            var token = GenerateToken(user);
             return (true, token, Enumerable.Empty<string>());
         }
 
-        private string GenerateToken(string userName)
+        private string GenerateToken(AppUser user)
         {
             var secret = _configuration["JwtConfig:Secret"];
             var issuer = _configuration["JwtConfig:ValidIssuer"];
@@ -74,7 +75,8 @@ namespace StoreList.Application.Services
             {
                 Subject = new ClaimsIdentity(new[]
                 {
-                    new Claim(ClaimTypes.Name, userName)
+                    new Claim(ClaimTypes.Name, user.UserName!),
+                    new Claim(ClaimTypes.NameIdentifier, user.Id)
                 }),
                 Expires = DateTime.UtcNow.AddDays(1),
                 Issuer = issuer,

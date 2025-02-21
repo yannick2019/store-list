@@ -3,10 +3,10 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace StoryList.Infrastructure.Migrations
+namespace StoreList.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class AddAppUser : Migration
+    public partial class InitialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -159,6 +159,46 @@ namespace StoryList.Infrastructure.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "ShoppingLists",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ShoppingLists", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ShoppingLists_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Items",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Quantity = table.Column<int>(type: "int", nullable: false),
+                    IsChecked = table.Column<bool>(type: "bit", nullable: false),
+                    ShoppingListId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Items", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Items_ShoppingLists_ShoppingListId",
+                        column: x => x.ShoppingListId,
+                        principalTable: "ShoppingLists",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
                 table: "AspNetRoleClaims",
@@ -197,6 +237,22 @@ namespace StoryList.Infrastructure.Migrations
                 column: "NormalizedUserName",
                 unique: true,
                 filter: "[NormalizedUserName] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Items_ShoppingListId",
+                table: "Items",
+                column: "ShoppingListId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ShoppingLists_Name",
+                table: "ShoppingLists",
+                column: "Name",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ShoppingLists_UserId",
+                table: "ShoppingLists",
+                column: "UserId");
         }
 
         /// <inheritdoc />
@@ -218,7 +274,13 @@ namespace StoryList.Infrastructure.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
+                name: "Items");
+
+            migrationBuilder.DropTable(
                 name: "AspNetRoles");
+
+            migrationBuilder.DropTable(
+                name: "ShoppingLists");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
