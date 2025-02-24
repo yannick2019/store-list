@@ -5,6 +5,7 @@ import { AuthService } from './services/auth.service';
 import { filter } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { ProfileService } from './services/profile.service';
+import { UserStateService } from './services/user-state.service';
 
 @Component({
   selector: 'app-root',
@@ -16,6 +17,7 @@ export class AppComponent implements OnInit{
   private authService = inject(AuthService);
   private router = inject(Router);
   private profileService = inject(ProfileService);
+  private userStateService = inject(UserStateService);
 
   isLoaded = true;
   user = {};
@@ -50,7 +52,9 @@ export class AppComponent implements OnInit{
 
     this.profileService.getProfile().subscribe({
       next: (data) => {
+        console.log('Profile loaded:', data);
         this.user = data;
+        this.userStateService.setUser(data);
         this.isLoaded = true;
       },
       error: (error) =>  console.error('Error loading profile:', error)
