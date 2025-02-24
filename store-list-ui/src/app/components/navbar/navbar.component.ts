@@ -1,12 +1,8 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, Input } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
-
-interface User {
-  name: string;
-  email: string;
-}
+import { UserStateService } from '../../services/user-state.service';
 
 @Component({
   selector: 'app-navbar',
@@ -14,10 +10,11 @@ interface User {
   templateUrl: './navbar.component.html',
   styleUrl: './navbar.component.css'
 })
-export class NavbarComponent {
-  @Input() user: User | null = null;
+export class NavbarComponent  {
   private router = inject(Router);
   private authService = inject(AuthService);
+
+  user$ = inject(UserStateService).user$;
   isDropdownOpen = false;
 
   toggleDropdown() {
@@ -32,5 +29,6 @@ export class NavbarComponent {
 
   goToProfile(): void {
     this.router.navigate(['/profile']);
+    this.isDropdownOpen = false;
   }
 }

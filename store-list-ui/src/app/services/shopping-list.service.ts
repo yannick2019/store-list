@@ -1,25 +1,14 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-
-interface ShoppingListItem {
-  id: string;
-  name: string;
-  quantity: number;
-  isChecked: boolean;
-}
-
-interface ShoppingList {
-  id: string;
-  name: string;
-  items: ShoppingListItem[];
-}
+import { ShoppingList } from '../models/models';
+import { environment } from '../../environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ShoppingListService {
-  private apiUrl = 'https://localhost:7019/api/shoppinglist';
+  private apiUrl = environment.apiUrl + '/shoppinglist';
 
   private http = inject(HttpClient);
 
@@ -31,8 +20,8 @@ export class ShoppingListService {
     return this.http.get<ShoppingList>(`${this.apiUrl}/${id}`);
   }
 
-  addList(list: ShoppingList): Observable<any> {
-    return this.http.post(this.apiUrl, list);
+  addList(list: Omit<ShoppingList, 'id' | 'userId'>): Observable<ShoppingList> {
+    return this.http.post<ShoppingList>(this.apiUrl, list);
   }
 
   updateList(id: string, list: ShoppingList): Observable<any> {

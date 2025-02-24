@@ -17,6 +17,7 @@ export class RegisterComponent implements OnInit{
 
   registerForm!: FormGroup;
   submitted = false;
+  loading = false;
   errorMessage: string | null = null; 
 
   ngOnInit(): void {
@@ -37,9 +38,16 @@ export class RegisterComponent implements OnInit{
     this.errorMessage = null;
     
     if (this.registerForm.valid) {
+      this.loading = true;
       this.authService.register(this.registerForm.value).subscribe({
-        next: () => this.router.navigate(['/lists']),
-        error: () => this.errorMessage = 'Registration failed'
+        next: () => {
+          this.loading = false;
+          this.router.navigate(['/lists']);
+        },
+        error: () => {
+          this.loading = false;
+          this.errorMessage = 'Registration failed';
+        }
       })
     }
   }

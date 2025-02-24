@@ -5,6 +5,7 @@ import { ShoppingListDetailsComponent } from './components/shopping-list-details
 import { LoginComponent } from './components/login/login.component';
 import { RegisterComponent } from './components/register/register.component';
 import { AuthGuard } from './guards/auth.guard';
+import { ProfileComponent } from './components/profile/profile.component';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -17,7 +18,8 @@ export const routes: Routes = [
       { path: 'lists', component: ShoppingListComponent },
       { path: 'lists/:id', component: ShoppingListDetailsComponent },
       { path: 'new', component: ShoppingListFormComponent },
-      { path: 'edit/:id', component: ShoppingListFormComponent }
+      { path: 'edit/:id', component: ShoppingListFormComponent },
+      { path: 'profile', component: ProfileComponent }
     ]
   }   
 ];

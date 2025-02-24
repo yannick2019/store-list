@@ -2,6 +2,7 @@ import { Component, inject, OnInit } from '@angular/core';
 import { ShoppingListService } from '../../services/shopping-list.service';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-shopping-list',
@@ -12,11 +13,34 @@ import { RouterModule } from '@angular/router';
 })
 export class ShoppingListComponent implements OnInit {
   shoppingLists: any[] = [];
+  isLoading = true;
+  error: string | null = null;
+
   private shoppingListService = inject(ShoppingListService);
+  private authService = inject(AuthService);
 
   ngOnInit(): void {
-    this.shoppingListService.getAllLists().subscribe(data => {
-      this.shoppingLists = data;
-    });
+    if (!this.authService.isAuthenticated()) {
+      return;
+    }
+
+    this.loadLists();
+  }
+
+  private loadLists() {
+    this.isLoading = true;
+    this.error = null;
+
+    this.shoppingListService.getAllLists().subscribe({
+      next: (data) => {
+        this.shoppingLists = data;
+        this.isLoading = false;
+      },
+      error: (error) => {
+        this.error = 'Failed to load shopping lists';
+        this.isLoading = false;
+        console.error('Error loading lists:', error);
+      }
+    })
   }
 }
