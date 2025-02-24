@@ -5,7 +5,7 @@
             <div class="text-center">
                 <div class="illustration-container">
                     <!-- illustration -->
-                    <img src="illustration.png" alt="Illustration" class="img-fluid">
+                    <img src="assets/illustration.png" alt="Illustration" class="img-fluid">
                 </div>
             </div>
         </div>
@@ -56,8 +56,10 @@
                         </div>
                     </div>
 
-                    <button type="submit" class="btn btn-dark w-100 py-3 mb-4">
-                        Create Account
+                    <button type="submit" class="btn btn-dark w-100 py-3 mb-4" [disabled]="loading">
+                        <span *ngIf="!loading">Create Account</span>
+                        <span *ngIf="loading" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                        <span *ngIf="loading" class="visually-hidden">Loading...</span>
                     </button>
 
                     <div class="d-flex align-items-center mb-4">
@@ -69,8 +71,8 @@
                     <button type="button" (click)="signInWithGoogle()"
                         class="btn btn-outline-light w-100 py-3 d-flex align-items-center justify-content-center gap-2"
                         style="border-color: #E2E8F0;">
-                        <img src="google-icon.png" alt="Google" style="height: 18px;">
-                        Sign in with Google
+                        <img src="assets/google-icon.png" alt="Google" style="height: 18px;">
+                        Sign in with Google (not functional yet)
                     </button>
 
                     <p class="text-center mt-4 mb-0">

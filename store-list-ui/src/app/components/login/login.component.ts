@@ -17,6 +17,7 @@ export class LoginComponent implements OnInit {
 
   loginForm!: FormGroup;
   submitted = false;
+  loading = false;
   errorMessage: string | null = null; 
 
   ngOnInit(): void {
@@ -36,9 +37,16 @@ export class LoginComponent implements OnInit {
     this.errorMessage = null;
 
     if (this.loginForm.valid) {
+      this.loading = true;
       this.authService.login(this.loginForm.value).subscribe({
-        next: () => this.router.navigate(['/lists']),
-        error: () => this.errorMessage = 'Invalid username or password'
+        next: () => {
+          this.loading = false;
+          this.router.navigate(['/lists']);
+        },
+        error: () => {
+          this.loading = false;
+          this.errorMessage = 'Invalid username or password';
+        }
       })
     }
   }

@@ -4,12 +4,13 @@ import { BehaviorSubject, Observable, tap } from 'rxjs';
 import { Authresponse, LoginRequest, RegisterRequest, User } from '../models/models';
 import { UserStateService } from './user-state.service';
 import { jwtDecode } from 'jwt-decode';
+import { environment } from '../../environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  private apiUrl = 'https://localhost:7019/api/account';
+  private apiUrl = environment.apiUrl + '/account';
   private http = inject(HttpClient);
   private tokenSubject = new BehaviorSubject<string | null>(localStorage.getItem('token'));
   private userState = inject(UserStateService);
