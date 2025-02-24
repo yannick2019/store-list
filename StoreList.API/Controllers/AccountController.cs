@@ -17,6 +17,11 @@ namespace StoreList.API.Controllers
             _authService = authService;
         }
 
+        /// <summary>
+        /// Registers a new user.
+        /// </summary>
+        /// <param name="model">The user registration model containing user details.</param>
+        /// <returns>A token if registration is successful, otherwise a bad request with errors.</returns>
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] AddOrUpdateAppUserModel model)
         {
@@ -37,6 +42,11 @@ namespace StoreList.API.Controllers
             return Ok(new { token });
         }
 
+        /// <summary>
+        /// Authenticates a user and generates a token.
+        /// </summary>
+        /// <param name="model">The login model containing user credentials.</param>
+        /// <returns>A token if authentication is successful, otherwise a bad request with errors.</returns>
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginModel model)
         {

@@ -1,11 +1,10 @@
 ﻿using System.Security.Claims;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
 using StoreList.Application.Interfaces;
 
 namespace StoreList.Application.Services
 {
-    public class UserContextService : IUserContextService
+    internal class UserContextService : IUserContextService
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
 

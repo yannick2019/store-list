@@ -22,7 +22,7 @@ namespace StoreList.Infrastructure.Data
                 entity.Property(e => e.Name)
                       .IsRequired()
                       .HasMaxLength(100);
-                entity.HasIndex(e => e.Name)
+                entity.HasIndex(e => new { e.Name, e.UserId })
                       .IsUnique();
                 entity.HasMany(e => e.Items)
                       .WithOne(i => i.ShoppingList)
