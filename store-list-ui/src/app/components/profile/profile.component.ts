@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { UserStateService } from '../../services/user-state.service';
 import { User } from '../../models/models';
 import { ProfileService } from '../../services/profile.service';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, NgForm } from '@angular/forms';
 
 @Component({
   selector: 'app-profile',
@@ -32,6 +32,20 @@ export class ProfileComponent implements OnInit{
     });
   }
 
+  getUserInitials(): string {
+    if (!this.user) return '?';
+    
+    if (this.user.firstName && this.user.lastName) {
+      return `${this.user.firstName.charAt(0)}${this.user.lastName.charAt(0)}`;
+    } else if (this.user.firstName) {
+      return this.user.firstName.charAt(0);
+    } else if (this.user.userName) {
+      return this.user.userName.charAt(0).toUpperCase();
+    }
+    
+    return '?';
+  }
+
   enableEditMode(): void {
     this.isEditMode = true;
   }
@@ -46,8 +60,8 @@ export class ProfileComponent implements OnInit{
     this.isEditMode = false;
   }
 
-  saveProfile(): void {
-    if (!this.user) return;
+  saveProfile(form: NgForm): void {
+    if (!this.user || form.invalid) return;
     
     this.isSaving = true;
     

@@ -1,53 +1,90 @@
-<div class="container py-5">
-    <div class="row mb-4 align-items-center">
-      <div class="col">
-        <h1 class="display-6 mb-4">User Profile</h1>
-        <div class="row profile" *ngIf="user">
-          <div class="col-md-6">
-            <div class="card">
-              <div class="card-header">
-                Profile Information
-              </div>
-              <div class="card-body">
-                <p><strong>Username:</strong> {{ user.userName }}</p>
-                <p><strong>Email:</strong> {{ user.email }}</p>
-                
-                <form (ngSubmit)="saveProfile()" *ngIf="!isEditMode">
-                  <p><strong>First Name:</strong> {{ user.firstName || 'Not set' }}</p>
-                  <p><strong>Last Name:</strong> {{ user.lastName || 'Not set' }}</p>
-                  <button type="button" class="btn btn-dark" (click)="enableEditMode()">Edit Profile</button>
-                </form>
-                
-                <form (ngSubmit)="saveProfile()" *ngIf="isEditMode">
-                  <div class="mb-3">
-                    <label for="firstName" class="form-label">First Name</label>
-                    <input 
-                      type="text" 
-                      class="form-control" 
-                      id="firstName" 
-                      name="firstName"
-                      [(ngModel)]="editableUser.firstName">
-                  </div>
-                  <div class="mb-3">
-                    <label for="lastName" class="form-label">Last Name</label>
-                    <input 
-                      type="text" 
-                      class="form-control" 
-                      id="lastName" 
-                      name="lastName"
-                      [(ngModel)]="editableUser.lastName">
-                  </div>
-                  <div class="d-flex gap-2">
-                    <button type="submit" class="btn btn-success" [disabled]="isSaving">
-                      {{ isSaving ? 'Saving...' : 'Save Changes' }}
-                    </button>
-                    <button type="button" class="btn btn-secondary" (click)="cancelEditMode()">Cancel</button>
-                  </div>
-                </form>
-              </div>
-            </div>
-          </div>
-        </div>
+<div class="profile-container">
+  <div class="profile-header">
+    <div class="avatar-container">
+      <div class="avatar">
+        {{ getUserInitials() }}
       </div>
     </div>
+    <h1 class="profile-title">Profile</h1>
   </div>
+
+  <div class="profile-content" *ngIf="user">
+    <div class="profile-card">
+      <div class="card-section">
+        <div class="info-row">
+          <span class="info-label">Username</span>
+          <span class="info-value">{{ user.userName }}</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Email</span>
+          <span class="info-value">{{ user.email }}</span>
+        </div>
+      </div>
+
+      <!-- View Mode -->
+      <div class="card-section" *ngIf="!isEditMode">
+        <div class="info-row">
+          <span class="info-label">First Name</span>
+          <span class="info-value">{{ user.firstName || 'Not set' }}</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Last Name</span>
+          <span class="info-value">{{ user.lastName || 'Not set' }}</span>
+        </div>
+        <button class="edit-button" (click)="enableEditMode()">
+          Edit Profile
+        </button>
+      </div>
+
+      <!-- Edit Mode -->
+      <form #profileForm="ngForm" (ngSubmit)="saveProfile(profileForm)" *ngIf="isEditMode" class="edit-form">
+        <div class="form-group">
+          <label for="firstName">First Name</label>
+          <input 
+            type="text" 
+            id="firstName" 
+            name="firstName"
+            #firstName="ngModel"
+            [(ngModel)]="editableUser.firstName"
+            required
+            minlength="2"
+            maxlength="50"
+            pattern="^[a-zA-Z]+(([',. -][a-zA-Z ])?[a-zA-Z]*)*$"
+            placeholder="Enter your first name">
+          <div *ngIf="firstName.invalid && (firstName.dirty || firstName.touched)" class="error-message">
+            <div *ngIf="firstName.errors?.['required']">First name is required.</div>
+            <div *ngIf="firstName.errors?.['minlength']">First name must be at least 2 characters.</div>
+            <div *ngIf="firstName.errors?.['maxlength']">First name cannot exceed 50 characters.</div>
+            <div *ngIf="firstName.errors?.['pattern']">First name can only contain letters and basic punctuation.</div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="lastName">Last Name</label>
+          <input 
+            type="text" 
+            id="lastName" 
+            name="lastName"
+            #lastName="ngModel"
+            [(ngModel)]="editableUser.lastName"
+            required
+            minlength="2"
+            maxlength="50"
+            pattern="^[a-zA-Z]+(([',. -][a-zA-Z ])?[a-zA-Z]*)*$"
+            placeholder="Enter your last name">
+          <div *ngIf="lastName.invalid && (lastName.dirty || lastName.touched)" class="error-message">
+            <div *ngIf="lastName.errors?.['required']">Last name is required.</div>
+            <div *ngIf="lastName.errors?.['minlength']">Last name must be at least 2 characters.</div>
+            <div *ngIf="lastName.errors?.['maxlength']">Last name cannot exceed 50 characters.</div>
+            <div *ngIf="lastName.errors?.['pattern']">Last name can only contain letters and basic punctuation.</div>
+          </div>
+        </div>
+        <div class="button-group">
+          <button type="button" class="cancel-button" (click)="cancelEditMode()">Cancel</button>
+          <button type="submit" class="save-button" [disabled]="profileForm.invalid || isSaving">
+            {{ isSaving ? 'Saving...' : 'Save Changes' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
