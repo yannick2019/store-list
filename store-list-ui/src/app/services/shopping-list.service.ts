@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { catchError, Observable, retry, throwError } from 'rxjs';
 import { ShoppingList } from '../models/models';
 import { environment } from '../../environment';
 
@@ -24,8 +24,20 @@ export class ShoppingListService {
     return this.http.post<ShoppingList>(this.apiUrl, list);
   }
 
-  updateList(id: string, list: ShoppingList): Observable<any> {
-    return this.http.put(`${this.apiUrl}/${id}`, list);
+  updateList(id: string, list: any): Observable<any> {
+    //console.log('Sending update data:', JSON.stringify(list));
+    
+    // Add error handling and retry logic
+    return this.http.put(`${this.apiUrl}/${id}`, list)
+      .pipe(
+        retry(1), // Retry once if connection fails
+        catchError(error => {
+          if (error.status === 0) {
+            console.error('Connection error. Is the server running?');
+          }
+          return throwError(() => error);
+        })
+      );
   }
 
   deleteList(id: string): Observable<any> {

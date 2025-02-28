@@ -27,8 +27,27 @@ export class ProfileComponent implements OnInit{
         this.editableUser = {
           firstName: user.firstName || '',
           lastName: user.lastName || ''
+        };
+
+        if (!user.firstName && !user.lastName) {
+          this.loadProfileData();
         }
       }
+    });
+  }
+
+  loadProfileData(): void {
+    this.profileService.getProfile().subscribe({
+      next: (data) => {
+        // Update both the local user and the user state service
+        this.user = data;
+        this.userStateService.setUser(data);
+        this.editableUser = {
+          firstName: data.firstName || '',
+          lastName: data.lastName || ''
+        };
+      },
+      error: (error) => console.error('Error loading profile:', error)
     });
   }
 
