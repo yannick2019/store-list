@@ -1,4 +1,4 @@
-<div class="container py-5">
+<div class="container details-container py-5">
     <!-- Loading Spinner -->
     <div *ngIf="isLoading" class="text-center py-5">
         <div class="spinner-border text-green" role="status">
@@ -21,12 +21,10 @@
                 <button [routerLink]="['/edit', shoppingList.id]" 
                         class="btn btn-dark d-flex align-items-center gap-2">
                     <i class="bi bi-pencil"></i>
-                    Modifier
                 </button>
                 <button [routerLink]="['/lists']" 
                         class="btn btn-outline-dark d-flex align-items-center gap-2">
                     <i class="bi bi-arrow-left"></i>
-                    Retour
                 </button>
             </div>
         </div>

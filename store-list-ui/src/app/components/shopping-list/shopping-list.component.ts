@@ -13,7 +13,7 @@ import { AuthService } from '../../services/auth.service';
 })
 export class ShoppingListComponent implements OnInit {
   shoppingLists: any[] = [];
-  isLoading = true;
+  isLoading = false;
   error: string | null = null;
 
   private shoppingListService = inject(ShoppingListService);

@@ -1,8 +1,11 @@
 import { Component, OnInit, inject } from '@angular/core';
-import { FormBuilder, FormGroup, FormArray, Validators, ReactiveFormsModule } from '@angular/forms';
+import { FormArray, FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { ShoppingListService } from '../../services/shopping-list.service';
+import { take } from 'rxjs/operators';
 import { CommonModule } from '@angular/common';
+import { ShoppingListService } from '../../services/shopping-list.service';
+import { UserStateService } from '../../services/user-state.service';
+import { ShoppingList, ShoppingListItem } from '../../models/models';
 
 @Component({
   selector: 'app-shopping-list-form',
@@ -16,13 +19,15 @@ export class ShoppingListFormComponent implements OnInit {
   private router = inject(Router);
   private shoppingListService = inject(ShoppingListService);
   private fb = inject(FormBuilder);
+  private userStateService = inject(UserStateService);
 
   shoppingListForm!: FormGroup;
   isEditMode = false;
   listId: string | null = null;
-  submitted = false; 
-  successMessage: string | null = null; 
-  errorMessage: string | null = null; 
+  submitted = false;
+  successMessage: string | null = null;
+  errorMessage: string | null = null;
+  userId: string | undefined;
   showDeleteModal = false;
 
   ngOnInit(): void {
@@ -54,10 +59,13 @@ export class ShoppingListFormComponent implements OnInit {
     return this.shoppingListForm.get('items') as FormArray;
   }
 
-  createItemFormGroup() {
+  createItemFormGroup(item?: ShoppingListItem | null) {
     return this.fb.group({
-      name: ['', Validators.required],
-      quantity: [1, Validators.required]
+      id: [item?.id || ''],
+      name: [item?.name || '', Validators.required],
+      quantity: [item?.quantity || 1, [Validators.required, Validators.min(1)]],
+      isChecked: [item?.isChecked || false],
+      shoppingListId: [item?.shoppingListId || '']
     });
   }
 
@@ -67,11 +75,14 @@ export class ShoppingListFormComponent implements OnInit {
         name: list.name,
       });
 
+      // Clear the items array first in case there's any leftover data
+      while (this.items.length) {
+        this.items.removeAt(0);
+      }
+
+      // Add each item with its ID
       list.items.forEach((item) => {
-        this.items.push(this.fb.group({
-          name: [item.name, Validators.required],
-          quantity: [item.quantity, Validators.required]
-        }));
+        this.items.push(this.createItemFormGroup(item));
       });
     });
   }
@@ -103,40 +114,87 @@ export class ShoppingListFormComponent implements OnInit {
       return;
     }
 
-    const formData = this.shoppingListForm.value;
+    this.userStateService.user$.pipe(take(1)).subscribe(user => {
+      this.userId = user?.id;
 
-    if (this.isEditMode) {
-      const updateData = {
-        id: this.listId,
-        ...formData
-      };
+      if (!this.userId) {
+        this.errorMessage = 'User not authenticated.';
+        return;
+      }
 
-      this.shoppingListService.updateList(this.listId!, updateData).subscribe({
-        next: () => {
-          this.successMessage = 'List updated successfully!';
-          setTimeout(() => this.router.navigate(['/lists']), 2000);
-        },
-        error: (error) => {
-          this.errorMessage = 'Error updating list. Please try again.';
-          console.error('Error:', error);
-        }
-      });
-    } else {
-      this.shoppingListService.addList(formData).subscribe({
-        next: () => {
-          this.successMessage = 'List created successfully!';
-          setTimeout(() => this.router.navigate(['/lists']), 2000);
-        },
-        error: (error) => {
-          this.errorMessage = 'Error creating list. Please try again.';
-          console.error('Error:', error);
-        }
-      });
-    }
+      const formData = this.shoppingListForm.value;
+
+      if (this.isEditMode) {
+        const updateData: ShoppingList = {
+          id: this.listId!,
+          name: formData.name,
+          items: formData.items.map((item: any) => {
+            // Only include items with an ID (existing items) or with filled in data (new items)
+            if (item.id || (item.name && item.name.trim() !== '')) {
+              return {
+                // For new items, don't send an ID at all instead of sending an empty string
+                ...(item.id ? { id: item.id } : {}),
+                name: item.name,
+                quantity: Number(item.quantity), 
+                isChecked: Boolean(item.isChecked), 
+                shoppingListId: this.listId 
+              };
+            }
+            return null;
+          }).filter((item: ShoppingListItem | null): item is ShoppingListItem => item !== null), // Remove any null items
+          userId: this.userId,
+        };
+
+        //console.log('updateData:', updateData);
+
+        this.shoppingListService.updateList(this.listId!, updateData).subscribe({
+          next: (response) => {
+            //console.log('Response after update:', response);
+            this.successMessage = 'List updated successfully!';
+            setTimeout(() => this.router.navigate(['/lists']), 2000);
+          },
+          error: (error) => {
+            console.error('Error details:', error);
+            if (error.error && error.error.errors) {
+              // Display detailed validation errors if available
+              const errorKeys = Object.keys(error.error.errors);
+              if (errorKeys.length > 0) {
+                this.errorMessage = `Validation error: ${error.error.errors[errorKeys[0]]}`;
+              } else {
+                this.errorMessage = 'Error updating list. Please try again.';
+              }
+            } else {
+              this.errorMessage = 'Error updating list. Please try again.';
+            }
+          }
+        });
+      } else {
+        const newList = {
+          name: formData.name,
+          items: formData.items.map((item: any) => ({
+            name: item.name,
+            quantity: Number(item.quantity),
+            isChecked: Boolean(item.isChecked)
+          })),
+          userId: this.userId
+        };
+
+        this.shoppingListService.addList(newList).subscribe({
+          next: () => {
+            this.successMessage = 'List created successfully!';
+            setTimeout(() => this.router.navigate(['/lists']), 2000);
+          },
+          error: (error) => {
+            this.errorMessage = 'Error creating list. Please try again.';
+            console.error('Error:', error);
+          }
+        });
+      }
+    });
   }
 
   confirmDelete(): void {
-    if(!this.listId) return;
+    if (!this.listId) return;
 
     this.shoppingListService.deleteList(this.listId).subscribe({
       next: () => {

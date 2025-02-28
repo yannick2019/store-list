@@ -52,7 +52,6 @@ export class AppComponent implements OnInit{
 
     this.profileService.getProfile().subscribe({
       next: (data) => {
-        console.log('Profile loaded:', data);
         this.user = data;
         this.userStateService.setUser(data);
         this.isLoaded = true;

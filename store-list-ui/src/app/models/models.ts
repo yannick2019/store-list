@@ -18,16 +18,18 @@ export interface ShoppingListItem {
   name: string;
   quantity: number;
   isChecked: boolean;
+  shoppingListId?: string;
 }
 
 export interface ShoppingList {
   id: string;
   name: string;
   items: ShoppingListItem[];
-  userId: string;
+  userId: User['id'] | undefined;
 }
 
 export interface User {
+  id: string;
   userName: string;
   email: string;
   firstName: string;
