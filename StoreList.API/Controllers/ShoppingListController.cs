@@ -81,14 +81,28 @@ namespace StoreList.API.Controllers
             }
 
             var userId = _userContextService.GetCurrentUserId();
-            var existingList = await _shoppingListService.GetByIdAsync(id, userId);
-            if (existingList == null)
-            {
-                return NotFound($"Shopping list with ID {id} not found.");
-            }
 
-            await _shoppingListService.UpdateAsync(shoppingListDto, userId);
-            return NoContent();
+            try
+            {
+                // Update the list
+                await _shoppingListService.UpdateAsync(shoppingListDto, userId);
+
+                // Always fetch the latest data after update
+                var updatedList = await _shoppingListService.GetByIdAsync(id, userId);
+
+                if (updatedList == null)
+                {
+                    return NotFound($"Shopping list with ID {id} not found after update.");
+                }
+
+                // Return the updated list
+                return Ok(updatedList);
+            }
+            catch (Exception ex)
+            {
+                // Log the exception
+                return StatusCode(500, $"An error occurred during the update operation: {ex.Message}");
+            }
         }
 
         /// <summary>

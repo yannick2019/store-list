@@ -1,4 +1,5 @@
-﻿using StoreList.Application.DTOs;
+﻿using System.Linq;
+using StoreList.Application.DTOs;
 using StoreList.Application.Interfaces;
 using StoreList.Domain.Entities;
 using StoreList.Domain.Interfaces;
@@ -76,15 +77,17 @@ namespace StoreList.Application.Services
             {
                 Id = shoppingListDto.Id,
                 Name = shoppingListDto.Name,
-                UserId = userId,  
+                UserId = userId,
                 Items = shoppingListDto.Items.Select(i => new Item
                 {
-                    Id = i.Id,
+                    // For items without an ID, use Guid.Empty which will be detected by the repository
+                    Id = i.Id == Guid.Empty ? Guid.Empty : Guid.NewGuid(),
                     Name = i.Name,
                     Quantity = i.Quantity,
                     IsChecked = i.IsChecked
                 }).ToList()
             };
+
             await _repository.UpdateAsync(shoppingList, userId);
         }
 

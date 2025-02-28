@@ -35,6 +35,7 @@ namespace StoreList.API.Controllers
 
                 var userInfo = new
                 {
+                    user.Id,
                     user.UserName,
                     user.Email,
                     user.FirstName,

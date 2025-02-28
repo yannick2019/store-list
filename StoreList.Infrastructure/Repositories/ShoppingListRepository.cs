@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using StoreList.Domain.Entities;
 using StoreList.Domain.Interfaces;
 using StoreList.Infrastructure.Data;
@@ -37,40 +38,120 @@ namespace StoreList.Infrastructure.Repositories
 
         public async Task UpdateAsync(ShoppingList shoppingList, string userId)
         {
+            // First, verify the shopping list exists and belongs to the user
             var existingList = await _context.ShoppingLists
                 .Include(list => list.Items)
                 .FirstOrDefaultAsync(list => list.Id == shoppingList.Id && list.UserId == userId);
 
             if (existingList == null) return;
 
+            // Update the basic list properties
             existingList.Name = shoppingList.Name;
 
-            foreach (var item in shoppingList.Items)
+            // Get all existing item IDs for comparison
+            var existingItemIds = existingList.Items.Select(i => i.Id).ToHashSet();
+            var newItemIds = shoppingList.Items.Where(i => i.Id != Guid.Empty).Select(i => i.Id).ToHashSet();
+
+            // 1. Update existing items
+            foreach (var newItem in shoppingList.Items.Where(i => i.Id != Guid.Empty))
             {
-                var existingItem = existingList.Items.FirstOrDefault(i => i.Id == item.Id);
+                var existingItem = existingList.Items.FirstOrDefault(i => i.Id == newItem.Id);
                 if (existingItem != null)
                 {
-                    existingItem.Name = item.Name;
-                    existingItem.Quantity = item.Quantity;
-                    existingItem.IsChecked = item.IsChecked;
+                    // Update properties
+                    existingItem.Name = newItem.Name;
+                    existingItem.Quantity = newItem.Quantity;
+                    existingItem.IsChecked = newItem.IsChecked;
                 }
                 else
                 {
-                    item.ShoppingListId = existingList.Id;
-                    existingList.Items.Add(item);
+                    // Skip items that don't exist - they'll be added later
                 }
             }
 
+            // 2. Remove items that are no longer present
+            // Create a separate list to avoid collection modification during enumeration
             var itemsToRemove = existingList.Items
-                .Where(existingItem => !shoppingList.Items.Any(newItem => newItem.Id == existingItem.Id))
+                .Where(i => !newItemIds.Contains(i.Id))
                 .ToList();
 
-            foreach (var item in itemsToRemove)
+            foreach (var itemToRemove in itemsToRemove)
             {
-                existingList.Items.Remove(item);
+                // Two-step removal process
+                existingList.Items.Remove(itemToRemove);
+                _context.Items.Remove(itemToRemove);
             }
 
-            await _context.SaveChangesAsync();
+            // 3. Add new items
+            // First, handle items with IDs that don't exist in the current list
+            foreach (var newItem in shoppingList.Items.Where(i => i.Id != Guid.Empty && !existingItemIds.Contains(i.Id)))
+            {
+                var itemToAdd = new Item
+                {
+                    Id = newItem.Id,
+                    Name = newItem.Name,
+                    Quantity = newItem.Quantity,
+                    IsChecked = newItem.IsChecked,
+                    ShoppingListId = existingList.Id
+                };
+                existingList.Items.Add(itemToAdd);
+            }
+
+            // Then, handle items without IDs
+            foreach (var newItem in shoppingList.Items.Where(i => i.Id == Guid.Empty))
+            {
+                var itemToAdd = new Item
+                {
+                    Id = Guid.NewGuid(),
+                    Name = newItem.Name,
+                    Quantity = newItem.Quantity,
+                    IsChecked = newItem.IsChecked,
+                    ShoppingListId = existingList.Id
+                };
+                existingList.Items.Add(itemToAdd);
+            }
+
+            try
+            {
+                // Save changes with explicit transaction
+                using var transaction = await _context.Database.BeginTransactionAsync();
+                await _context.SaveChangesAsync();
+                await transaction.CommitAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                // If we encounter a concurrency issue
+                _context.ChangeTracker.Clear(); // Clear all tracked entities
+
+                // Start fresh with a new context operation
+                var refreshedList = await _context.ShoppingLists
+                    .Include(list => list.Items)
+                    .FirstOrDefaultAsync(list => list.Id == shoppingList.Id && list.UserId == userId);
+
+                if (refreshedList == null) return; // List was deleted
+
+                // Update properties directly in the database using SQL
+                refreshedList.Name = shoppingList.Name;
+
+                // Remove all existing items and add fresh ones
+                _context.Items.RemoveRange(refreshedList.Items);
+
+                // Add all items from the update
+                foreach (var item in shoppingList.Items)
+                {
+                    var newItem = new Item
+                    {
+                        Id = item.Id == Guid.Empty ? Guid.NewGuid() : item.Id,
+                        Name = item.Name,
+                        Quantity = item.Quantity,
+                        IsChecked = item.IsChecked,
+                        ShoppingListId = refreshedList.Id
+                    };
+                    _context.Items.Add(newItem);
+                }
+
+                await _context.SaveChangesAsync();
+            }
         }
 
         public async Task DeleteAsync(Guid id, string userId)
